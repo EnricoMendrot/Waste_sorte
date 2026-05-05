@@ -1,0 +1,18 @@
+# ============================================================
+# Separador de Lixo Inteligente - Dependências Python
+# ============================================================
+
+# Visão computacional (câmera e processamento de imagem)
+opencv-python>=4.8.0
+
+# Modelo YOLO (detecção de objetos)
+ultralytics>=8.0.0
+
+# Comunicação serial com ESP32 via USB
+pyserial>=3.5
+
+# Requisições HTTP para comunicação Wi-Fi com ESP32
+requests>=2.28.0
+
+# Manipulação de arrays (usado internamente pelo OpenCV e YOLO)
+numpy>=1.24.0

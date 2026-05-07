@@ -99,9 +99,12 @@ Exemplos de uso:
     )
     parser.add_argument(
         "--camera",
-        type=int,
         default=settings.CAMERA_INDEX,
-        help=f"Índice da câmera (padrão: {settings.CAMERA_INDEX})",
+        help=(
+            f"Índice da câmera ou URL de stream do ESP32-CAM "
+            f"(padrão: {settings.CAMERA_INDEX}). "
+            f"Exemplos: 0  |  http://192.168.1.75:81/stream"
+        ),
     )
     parser.add_argument(
         "--log-level",

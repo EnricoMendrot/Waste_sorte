@@ -21,20 +21,28 @@ except ImportError:
 
 class CameraCapture:
     """
-    Classe para captura de imagens via webcam com OpenCV.
-    
+    Classe para captura de imagens via webcam ou stream de rede com OpenCV.
+
+    Suporta:
+    - Webcam local: camera_index=0 (ou outro inteiro)
+    - ESP32-CAM via Wi-Fi: camera_index="http://192.168.1.75:81/stream"
+
     Se o OpenCV não estiver disponível, gera imagens simuladas (numpy array).
     """
 
-    def __init__(self, camera_index: int = 0, width: int = 640, height: int = 480):
+    def __init__(self, camera_index: int | str = 0, width: int = 640, height: int = 480):
         """
         Inicializa a câmera.
 
         Args:
-            camera_index: Índice da câmera (0 = webcam padrão)
+            camera_index: Índice da câmera (int, ex: 0) ou URL do stream
+                          do ESP32-CAM (str, ex: "http://192.168.1.75:81/stream")
             width: Largura da imagem capturada
             height: Altura da imagem capturada
         """
+        # Converte para int se for string numérica (ex: argparse sem type=int)
+        if isinstance(camera_index, str) and camera_index.isdigit():
+            camera_index = int(camera_index)
         self.camera_index = camera_index
         self.width = width
         self.height = height

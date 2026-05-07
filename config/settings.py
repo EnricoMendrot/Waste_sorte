@@ -44,8 +44,10 @@ VALID_TRASH_TYPES = ["plastico", "papel", "metal"]
 # CÂMERA
 # ============================================================
 
-# Índice da câmera (0 = webcam padrão)
-CAMERA_INDEX = int(os.environ.get("CAMERA_INDEX", "0"))
+# Índice da câmera (0 = webcam padrão) ou URL de stream do ESP32-CAM
+# Exemplos: 0  |  "http://192.168.1.75:81/stream"
+_cam_env = os.environ.get("CAMERA_INDEX", "0")
+CAMERA_INDEX = int(_cam_env) if _cam_env.isdigit() else _cam_env
 
 # Resolução desejada (largura x altura)
 CAMERA_WIDTH = 640

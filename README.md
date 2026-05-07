@@ -2,11 +2,14 @@
 
 Sistema de visão computacional com YOLO para detecção automática de tipos de lixo (plástico, papel, metal) e comunicação com ESP32 para acionamento do mecanismo de separação.
 
+> 📷 **Suporta ESP32-CAM** como fonte de vídeo via stream Wi-Fi, além de webcams USB convencionais.
+
 ## 📁 Estrutura do Projeto
 
 ```
 Separador_lixo/
 ├── main.py                     # Ponto de entrada principal
+├── iniciar_espcam.bat          # Atalho para rodar com ESP32-CAM (Windows)
 ├── requirements.txt            # Dependências Python
 ├── README.md                   # Este arquivo
 │
@@ -64,14 +67,24 @@ python main.py --comm serial --port COM3
 python main.py --comm wifi --ip 192.168.1.100
 ```
 
-### 5. Executar com modelo YOLO real
+### 5. Executar com câmera ESP32-CAM (stream Wi-Fi)
+
+```bash
+# Usando o script atalho (recomendado no Windows)
+.\iniciar_espcam.bat 192.168.1.75
+
+# Ou diretamente
+python main.py --camera http://192.168.1.75:81/stream --real --preview
+```
+
+### 6. Executar com modelo YOLO real
 
 ```bash
 # Coloque o arquivo best.pt na pasta models/
 python main.py --real --comm serial --port COM3
 ```
 
-### 6. Todos os argumentos disponíveis
+### 7. Todos os argumentos disponíveis
 
 ```bash
 python main.py --help
@@ -86,7 +99,7 @@ python main.py --help
 | `--ip`        | IP do ESP32 (modo Wi-Fi)           | 192.168.1.100 |
 | `--preview`   | Exibir preview da câmera           | Falso         |
 | `--interval`  | Segundos entre cada detecção       | 1.0           |
-| `--camera`    | Índice da câmera                   | 0             |
+| `--camera`    | Índice da câmera (int) **ou URL do stream ESP32-CAM** | 0 |
 | `--log-level` | Nível de log                       | INFO          |
 | `--no-esp`    | Rodar sem ESP32 (só detecção)      | Falso         |
 
@@ -101,7 +114,7 @@ python main.py --help
 5. Faça upload do código
 6. A comunicação é via USB — basta manter o cabo conectado
 
-### Opção 2: Wi-Fi (HTTP)
+### Opção 2: Wi-Fi — ESP32 separador (HTTP)
 
 1. Abra o arquivo `esp32/separador_lixo_wifi.ino`
 2. **Altere** `ssid` e `password` para sua rede Wi-Fi
@@ -109,10 +122,26 @@ python main.py --help
 4. Abra o Monitor Serial para ver o IP atribuído ao ESP32
 5. Use esse IP no argumento `--ip`
 
+### Opção 3: ESP32-CAM (câmera via Wi-Fi)
+
+1. Abra o Arduino IDE
+2. Instale o suporte ESP32 pelo Board Manager
+3. Acesse `File → Examples → ESP32 → Camera → CameraWebServer`
+4. Selecione o modelo da placa (geralmente `CAMERA_MODEL_AI_THINKER`)
+5. Configure `ssid` e `password` para sua rede Wi-Fi
+6. Faça upload e abra o **Monitor Serial** (115200 baud)
+7. Anote o IP exibido e use com o script ou argumento `--camera`:
+
+```bash
+.\iniciar_espcam.bat <IP_EXIBIDO>
+```
+
 ## 🔄 Fluxo do Sistema
 
 ```
-Câmera → Captura Frame → YOLO (detecção) → Interpretação → ESP32 → Separação
+[Webcam USB]  ──┐
+                ├──► Captura Frame ──► YOLO (detecção) ──► Interpretação ──► ESP32 ──► Separação
+[ESP32-CAM] ───┘
 ```
 
 1. A câmera captura um frame
@@ -132,6 +161,8 @@ set COMM_TYPE=serial
 set SERIAL_PORT=COM5
 set ESP32_IP=192.168.1.50
 set CAMERA_INDEX=1
+# Ou para ESP32-CAM:
+set CAMERA_INDEX=http://192.168.1.75:81/stream
 ```
 
 ## 📝 Notas
@@ -140,4 +171,5 @@ set CAMERA_INDEX=1
 - O sistema funciona em **loop contínuo** — pressione `Ctrl+C` para parar
 - Os **logs** mostram todo o fluxo no terminal em tempo real
 - A troca entre Serial e Wi-Fi é feita apenas mudando o argumento `--comm`
-#
+- O **ESP32-CAM** envia vídeo via Wi-Fi e pode ser combinado com outro ESP32 para o mecanismo de separação
+- O script `iniciar_espcam.bat <IP>` é um atalho para facilitar o uso no Windows
